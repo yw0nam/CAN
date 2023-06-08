@@ -1,0 +1,9 @@
+pandas
+transformers==4.27.3
+scikit-learn
+lightning==2.0.1
+omegaconf
+ninja==1.11.1
+absl-py==1.4.0
+tensorboard
+tensorboardX
