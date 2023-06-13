@@ -5,9 +5,10 @@ from utils import *
 
 class multimodal_dataset(Dataset):
     
-    def __init__(self, csv):
+    def __init__(self, csv, sort=True):
         self.csv = csv
-        
+        if sort:
+            self.csv = self.csv.sort_values(by=['wav_length'])
     def __len__(self):
         return len(self.csv)
     

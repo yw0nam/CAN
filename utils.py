@@ -2,7 +2,7 @@ import numpy as np
 import argparse
 import torch
 
-emotion2int = {
+meld_emotion2int = {
     'neutral': 0, 
     'anger' : 1,
     'joy' : 2, 
@@ -12,6 +12,18 @@ emotion2int = {
     'disgust' : 6
 }
 
+iemocap_emotion2int = {
+    'Neutral': 0,
+    'Frustration': 1,
+    'Other': 2,
+    'Anger': 3,
+    'Surprise': 4,
+    'Disgust': 5,
+    'Excited': 6,
+    'Sadness': 7,
+    'Fear': 8,
+    'Happiness': 9
+}
 def pad_mel(inputs):
     _pad = 0
 

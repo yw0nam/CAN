@@ -7,3 +7,4 @@ ninja==1.11.1
 absl-py==1.4.0
 tensorboard
 tensorboardX
+moviepy

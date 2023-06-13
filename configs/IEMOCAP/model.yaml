@@ -1,0 +1,6 @@
+n_head: 16
+dropout_p: 0.3
+using_contra: True
+using_cma: True
+using_graylabel: True
+contra_loss_weight: 0.3

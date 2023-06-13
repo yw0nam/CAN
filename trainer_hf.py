@@ -10,6 +10,7 @@ from transformers import AutoTokenizer, Wav2Vec2Processor
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from omegaconf import OmegaConf as OC
 from utils import str2bool
+from pytorch_lightning.strategies import DDPStrategy
 
 def define_argparser():
     p = argparse.ArgumentParser()
@@ -21,7 +22,8 @@ def define_argparser():
     p.add_argument('--using_cma', required=True, type=str2bool, nargs='?', const=True, default=False,)
     p.add_argument('--batch_size', type=int, default=64)
     p.add_argument('--accumulate_grad', type=int, default=1)
-    p.add_argument('--clip_length', type=int, default=12)
+    p.add_argument('--lower_clip_length', type=float, default="0.0")
+    p.add_argument('--upper_clip_length', type=float, default="12.0")
     config = p.parse_args()
 
     return config
@@ -41,11 +43,11 @@ def main(args):
     train_config['model']['using_model'] = args.using_model
     train_config['model']['using_contra'] = args.using_contra
     # Load train and validation data
-    train = pd.read_csv(train_config['path']['train_csv']).query("wav_length <= {}".format(args.clip_length))
-    dev = pd.read_csv(train_config['path']['dev_csv']).query("wav_length <= {}".format(args.clip_length))
+    train = pd.read_csv(train_config['path']['train_csv']).query(f"wav_length <= {args.upper_clip_length} and wav_length >= {args.lower_clip_length}")
+    dev = pd.read_csv(train_config['path']['dev_csv']).query(f"wav_length <= {args.upper_clip_length} and wav_length >= {args.lower_clip_length}")
     
     text_tokenizer = AutoTokenizer.from_pretrained(train_config['model']['text_encoder'])
-    audio_processor = Wav2Vec2Processor.from_pretrained(train_config['model']['audio_processor'])
+    audio_processor = Wav2Vec2Processor.from_pretrained(train_config['model']['audio_encoder'])
     
     train_dataset = multimodal_dataset(train)
     val_dataset = multimodal_dataset(dev)
@@ -68,15 +70,15 @@ def main(args):
     )
     
     train_loader = DataLoader(
-        train_dataset, train_config['optimizer']['batch_size'], num_workers=4,
+        train_dataset, train_config['optimizer']['batch_size'], num_workers=6,
         collate_fn=multimodal_collator(text_tokenizer, audio_processor), pin_memory=True,
-        shuffle=True, drop_last=True
+        shuffle=False, drop_last=True
     )
     
     val_loader = DataLoader(
-        val_dataset, train_config['optimizer']['batch_size'], num_workers=4,
+        val_dataset, train_config['optimizer']['batch_size'], num_workers=6,
         collate_fn=multimodal_collator(text_tokenizer, audio_processor), pin_memory=True, 
-        drop_last=True, shuffle=False
+        shuffle=False, drop_last=True
     )
         
         

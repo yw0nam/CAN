@@ -12,14 +12,14 @@ class Emotion_MultinomialModel(nn.Module):
         
         if config['model']['using_model'] == 'both': 
             self.text_encoder = AutoModel.from_pretrained(config['model']['text_encoder'])
-            self.audio_encoder = Wav2Vec2ForCTC.from_pretrained(config['model']['audio_processor'])
+            self.audio_encoder = Wav2Vec2ForCTC.from_pretrained(config['model']['audio_encoder'])
             self.audio_encoder.lm_head = nn.Linear(1024, 768)
             self.audio_pool = nn.AdaptiveAvgPool2d((1, 768))
         
             self.emotion_out = nn.Linear(1536, 7)
 
         elif config['model']['using_model'] == 'audio':
-            self.audio_encoder =Wav2Vec2ForCTC.from_pretrained(config['model']['audio_processor'])
+            self.audio_encoder =Wav2Vec2ForCTC.from_pretrained(config['model']['audio_encoder'])
             self.audio_encoder.lm_head = nn.Linear(1024, 768)
             self.audio_pool = nn.AdaptiveAvgPool2d((1, 768))
             
@@ -66,7 +66,7 @@ class Emotion_MMER(nn.Module):
         
         # Encoder
         self.text_encoder = AutoModel.from_pretrained(config['model']['text_encoder'])
-        self.audio_encoder = Wav2Vec2ForCTC.from_pretrained(config['model']['audio_processor'])
+        self.audio_encoder = Wav2Vec2ForCTC.from_pretrained(config['model']['audio_encoder'])
         self.audio_encoder.lm_head = nn.Linear(1024, 768)
         
         # MMER
