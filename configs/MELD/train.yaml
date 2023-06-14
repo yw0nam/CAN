@@ -15,15 +15,17 @@ step:
 trainer:
   grad_clip_thresh: 1.5
   grad_acc: 1
-model:
-  n_head: 12
-  dropout_p: 0.5
+exp_setting:
   using_contra: True
   using_cma: True
   using_graylabel: False
+  dataset_name: 'MELD'
+  num_class: 10
+  using_model: 'audio'
+model:
+  n_head: 12
+  dropout_p: 0.5
   contra_loss_weight: 0.3
   label_name: 'emotion'
   text_encoder: "roberta-base"
   audio_encoder: "vitouphy/wav2vec2-xls-r-300m-phoneme"
-  audio_processor: "vitouphy/wav2vec2-xls-r-300m-phoneme"
-  using_model: 'audio'

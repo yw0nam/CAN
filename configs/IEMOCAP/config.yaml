@@ -1,6 +1,0 @@
-seed: 1004
-
-defaults:
-  - text_encoder: "roberta-base"
-  - audio_encoder: "vitouphy/wav2vec2-xls-r-300m-phoneme"
-  - label_name: 'emotion'

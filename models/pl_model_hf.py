@@ -3,23 +3,22 @@ from torch import nn
 import pytorch_lightning as pl
 from models.model_hf import Emotion_MultinomialModel, Emotion_MMER
 import torchmetrics
-import torch.nn.functional as F
 from transformers import get_cosine_with_hard_restarts_schedule_with_warmup
 
 class PL_model(pl.LightningModule):
     def __init__(self, train_config):
         super().__init__()
         self.save_hyperparameters()
-        self.model = Emotion_MMER(train_config) if train_config['model']['using_cma'] else Emotion_MultinomialModel(train_config)
+        self.model = Emotion_MMER(train_config) if train_config['exp_setting']['using_cma'] else Emotion_MultinomialModel(train_config)
         self.train_config = train_config
-        self.loss_weight = self.train_config['model']['contra_loss_weight'] if train_config['model']['using_contra'] else 0.0
+        self.loss_weight = self.train_config['model']['contra_loss_weight'] if train_config['exp_setting']['using_contra'] else 0.0
         # Define Accuracy
-        self.train_accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=7)
-        self.valid_accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=7)
+        self.train_accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=train_config["exp_setting"]['num_class'])
+        self.valid_accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=train_config["exp_setting"]['num_class'])
         
         # Define Loss
         self.ce = nn.CrossEntropyLoss()
-        if self.train_config['model']['using_graylabel']:
+        if self.train_config['exp_setting']['using_graylabel']:
             self.cs = nn.CosineSimilarity()
 
     def forward(self, text_inputs, audio_inputs):
@@ -76,11 +75,11 @@ class PL_model(pl.LightningModule):
         return [optimizer], [{"scheduler": scheduler, "interval": "step"}]
     
     def cal_loss(self, emo_out, emo_label, sim, contrastive_label):
-        if self.train_config['model']['using_graylabel']:
+        if self.train_config['exp_setting']['using_graylabel']:
             emo_loss = (1 - self.loss_weight) * (1 / sum(self.cs(emo_out, emo_label)))
         else:
             emo_loss = (1 - self.loss_weight) * self.ce(emo_out, emo_label)
-        if self.train_config['model']['using_contra']:
+        if self.train_config['exp_setting']['using_contra']:
             contra_loss = self.loss_weight * self.ce(sim, contrastive_label)
         else:
             contra_loss = 0.0

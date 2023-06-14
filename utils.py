@@ -15,14 +15,10 @@ meld_emotion2int = {
 iemocap_emotion2int = {
     'Neutral': 0,
     'Frustration': 1,
-    'Other': 2,
-    'Anger': 3,
-    'Surprise': 4,
-    'Disgust': 5,
-    'Excited': 6,
-    'Sadness': 7,
-    'Fear': 8,
-    'Happiness': 9
+    'Anger': 2,
+    'Excited': 3,
+    'Sadness': 4,
+    'Happiness': 5
 }
 def pad_mel(inputs):
     _pad = 0
@@ -74,3 +70,11 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
+    
+def make_normalized_emotion(x, emo_dict):
+    emo_arr = np.zeros(len(emo_dict))
+    for emo in x.split(';'):
+        if emo == '':
+            continue
+        emo_arr[emo_dict[emo]] += 1
+    return emo_arr / emo_arr.sum()
