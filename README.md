@@ -2,13 +2,6 @@
 
 MultiModal Emotion Recognition using Cross modal Attention module and Contrastive loss
 
-- Data: [KEMDy19](https://nanum.etri.re.kr/share/kjnoh/KEMDy19?lang=ko_KR)
-- Modality: Audio, Text
-
-<img src="result/model_figure.png" width=900> 
-
-<img src="result/model_figure_2.png" width=900> 
-
 
 # Installation
 ## Experiment setting
@@ -50,24 +43,6 @@ DS_BUILD_CPU_ADAM=1 DS_BUILD_FUSED_ADAM=1 DS_BUILD_UTILS=1 DS_BUILD_AIO=1 pip in
 
 Please check for detail installation [DeepSpeed official github](https://github.com/microsoft/DeepSpeed)
 
-# Prepare for training
-
-a. Prepare data 
-
-- root_path: original KEMD19 path Ex) /home/ubuntu/data/KEMD_19/
-- save_path: save folder, default: ./data/
-
-```shell
-python preprocess.py --root_path your_KEMD_19_path --save_path ./data/
-```
-
-Here is the preprocess flow chart.
-
-<img src="result/preprocessing.png" width=600> 
-
-Note that, wav_length cliping is conducted in train_hf.sh or inference.py 
-
-
 # Train 
 
 Run Training code
@@ -100,11 +75,3 @@ After this,
 ```shell
 CUDA_VISIBLE_DEVICES=0 python inference.py
 ```
-
-# Result
-
-In table, CE means cross entropy and CA means contrastive loss repectively.
-
-Multimodal(CAT) represents using concatenate for multimodal modeling and Multimodal(CMA) represents using cross modal attention respectively.
-
-<img src="result/metric.png" width=900> 
