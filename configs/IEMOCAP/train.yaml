@@ -7,25 +7,29 @@ optimizer:
   betas: [0.9, 0.999]
   eps: 0.000000001
   weight_decay: 0.0
-  lr: 0.0001
+  lr: 0.00005
 step:
-  max_epochs: 5
+  max_epochs: 10
   warmup_ratio: 0.2
   num_cycle: 1
+  contra_deacy_start: 0.05
+  contra_deacy_end: 0.3
 trainer:
-  grad_clip_thresh: 1.5
+  grad_clip_thresh: 1.0
   grad_acc: 1
 exp_setting:
   using_contra: True
   using_cma: True
   using_graylabel: False
+  using_weight_decay: False
   dataset_name: 'IEMOCAP'
-  num_class: 10
+  num_class: 6
   using_model: 'audio'
 model:
   n_head: 12
-  dropout_p: 0.5
-  contra_loss_weight: 0.3
+  target_contra_loss_weight: 0.1
+  init_contra_loss_weight: 0.9
+  dropout_p: 0.1
   label_name: 'emotion'
   text_encoder: "roberta-base"
   audio_encoder: "vitouphy/wav2vec2-xls-r-300m-phoneme"

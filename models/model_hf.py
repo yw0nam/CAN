@@ -76,8 +76,6 @@ class Emotion_MMER(nn.Module):
         # pooling
         self.pool_layer = nn.AdaptiveAvgPool2d((1, 768))
         self.emotion_out = nn.Linear(1536, num_class)
-        self.emotion_out_act = nn.Tanh()
-        self.emotion_out_dropout = nn.Dropout(config['model']['dropout_p'])
         
         if self.config['exp_setting']['using_contra']:
             self.cos_sim = nn.CosineSimilarity(dim=2)
@@ -95,7 +93,7 @@ class Emotion_MMER(nn.Module):
         
         # Get emotion output
         concated_feat = torch.cat([pooled_audio, pooled_text], dim=1)
-        emotion_out = self.emotion_out_dropout(self.emotion_out_act(self.emotion_out(concated_feat)))
+        emotion_out = self.emotion_out(concated_feat)
 
         # Get constrastive out
         if self.config['exp_setting']['using_contra']:

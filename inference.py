@@ -17,7 +17,6 @@ def define_argparser():
     p.add_argument('--model_save_path', default='./output/ckpt/', type=str)
     p.add_argument('--config_path', default='./output/log/', type=str)
     p.add_argument('--train_config', default='./configs/train.yaml', type=str)
-    p.add_argument('--preprocess_config', default='./configs/preprocess.yaml', type=str)
     p.add_argument('--out_path', default='./result/metrics.csv', type=str)
     config = p.parse_args()
 
@@ -39,22 +38,17 @@ def predict(trainer, loader, train_config, ckp_path):
 def main(args):
 
     train_config = OC.load(args.train_config)
-    preprocess_config = OC.load(args.preprocess_config)
 
-    csv = pd.read_csv(preprocess_config['path']['csv_path'])
-    csv = csv.drop_duplicates(subset=['segment_id'], ignore_index=True)
-            
-    csv['wav_length'] = csv['wav_end'] - csv['wav_start']
-    csv = csv.query("wav_length <= %d"%25)
-    _, test = train_test_split(csv, test_size=0.2, random_state=1004, stratify=csv['emotion'])
+
+    test = pd.read_csv(train_config['path']['test_csv'])
     text_tokenizer = AutoTokenizer.from_pretrained(train_config['model']['text_encoder'])
-    audio_processor = Wav2Vec2Processor.from_pretrained(train_config['model']['audio_processor'])
+    audio_processor = Wav2Vec2Processor.from_pretrained(train_config['model']['audio_encoder'])
 
-    test_dataset = multimodal_dataset(test, preprocess_config)
+    test_dataset = multimodal_dataset(test, train_config)
     test_loader = DataLoader(test_dataset, 16, num_workers=8,
                                 collate_fn=multimodal_collator(text_tokenizer, audio_processor), pin_memory=True,
                                 shuffle=False, drop_last=False)
-    trainer = Trainer(gpus=1,
+    trainer = Trainer(accelerator='gpu',
                     logger=False)
     
     ckpt_path = sorted(glob(os.path.join(args.model_save_path, '*')))

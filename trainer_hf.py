@@ -20,6 +20,7 @@ def define_argparser():
     p.add_argument('--using_model', required=True, type=str)
     p.add_argument('--using_contra', required=True, type=str2bool, nargs='?', const=True, default=False)
     p.add_argument('--using_cma', required=True, type=str2bool, nargs='?', const=True, default=False,)
+    p.add_argument('--using_weight_decay', required=True, type=str2bool, nargs='?', const=True, default=False,)
     p.add_argument('--batch_size', type=int, default=64)
     p.add_argument('--accumulate_grad', type=int, default=1)
     # p.add_argument('--lower_clip_length', type=float, default="0.0")
@@ -42,6 +43,7 @@ def main(args):
     train_config['exp_setting']['using_cma'] = args.using_cma
     train_config['exp_setting']['using_model'] = args.using_model
     train_config['exp_setting']['using_contra'] = args.using_contra
+    train_config['exp_setting']['using_weight_decay'] = args.using_weight_decay
     # Load train and validation data
     train = pd.read_csv(train_config['path']['train_csv']).query(f"wav_length <= {args.upper_clip_length}")
     dev = pd.read_csv(train_config['path']['dev_csv']).query(f"wav_length <= {args.upper_clip_length}")
