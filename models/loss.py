@@ -9,8 +9,8 @@ class CAN_loss(nn.Module):
         self.using_contra = train_config['exp_setting']['using_contra']
         self.using_weight_decay = train_config['exp_setting']['using_weight_decay']
         # define contrastive loss decay setting
-        self.decay_start = train_config['step']['total_step'] // train_config['step']['contra_deacy_start']
-        self.decay_end = train_config['step']['total_step'] // train_config['step']['contra_deacy_end']
+        self.decay_start = int(train_config['step']['total_step'] * train_config['step']['contra_deacy_start'])
+        self.decay_end = int(train_config['step']['total_step'] * train_config['step']['contra_deacy_end'])
         
         self.target_weight = train_config['model']['target_contra_loss_weight']
         self.init_weight = train_config['model']['init_contra_loss_weight']

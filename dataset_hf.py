@@ -38,12 +38,12 @@ class multimodal_dataset(Dataset):
 
 class multimodal_collator():
     
-    def __init__(self, text_tokenizer, audio_processor, return_text=False, max_length=512):
+    def __init__(self, text_tokenizer, audio_processor, return_text=False, max_length=512, graylabel=False):
         self.text_tokenizer = text_tokenizer
         self.audio_processor = audio_processor
         self.return_text = return_text
         self.max_length = max_length
-        
+        self.graylabel = graylabel
     def __call__(self, batch):
         text = [d['text'] for d in batch]
         wav = [d['wav'] for d in batch]
@@ -66,43 +66,7 @@ class multimodal_collator():
         )
         
         labels = {
-            "emotion" : torch.LongTensor(emotion),
-        }
-        if self.return_text:
-            labels['text'] = text
-        return text_inputs, audio_inputs, labels
-
-class multimodal_graylabel_collator():
-    
-    def __init__(self, text_tokenizer, audio_processor, return_text=False, max_length=512):
-        self.text_tokenizer = text_tokenizer
-        self.audio_processor = audio_processor
-        self.return_text = return_text
-        self.max_length = max_length
-        
-    def __call__(self, batch):
-        text = [d['text'] for d in batch]
-        wav = [d['wav'] for d in batch]
-        emotion = [d['emotion'] for d in batch]
-        
-        text_inputs = self.text_tokenizer(
-            text,
-            padding=True,
-            truncation=True,
-            return_tensors="pt",
-            add_special_tokens=True,
-            max_length=self.max_length
-        )
-        
-        audio_inputs = self.audio_processor(
-            wav,
-            sampling_rate=16000, 
-            padding=True, 
-            return_tensors='pt'
-        )
-        
-        labels = {
-            "emotion" : torch.FloatTensor(emotion),
+            "emotion" : torch.LongTensor(emotion) if not self.graylabel else torch.FloatTensor(emotion)
         }
         if self.return_text:
             labels['text'] = text

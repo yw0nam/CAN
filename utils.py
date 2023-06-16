@@ -74,7 +74,7 @@ def str2bool(v):
 def make_normalized_emotion(x, emo_dict):
     emo_arr = np.zeros(len(emo_dict))
     for emo in x.split(';'):
-        if emo == '':
+        if emo == '' or emo not in emo_dict.keys():
             continue
         emo_arr[emo_dict[emo]] += 1
     return emo_arr / emo_arr.sum()
